@@ -1,0 +1,56 @@
+services:
+  realm:
+    image: mangos-realm
+    container_name: realm
+    depends_on:
+      - mysql
+    ports: 
+      - 3724:3724
+    build: 
+      context: ..
+      dockerfile: ./.docker/RealmServer.Dockerfile
+    networks:
+      - mangosSharp
+
+  cluster:
+    image: mangos-cluster
+    container_name: cluster
+    depends_on:
+      - mysql
+    ports: 
+      - 8085:8085
+    build: 
+      context: ..
+      dockerfile: ./.docker/WorldCluster.Dockerfile
+    networks:
+      - mangosSharp
+  
+  world:
+    image: mangos-world
+    container_name: world
+    depends_on:
+      - mysql
+    build: 
+      context: ..
+      dockerfile: ./.docker/WorldServer.Dockerfile
+    networks:
+      - mangosSharp
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    volumes:
+      - mangosSharp:/var/lib/mysql
+    ports: 
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 'rootpass'
+    networks:
+      - mangosSharp
+
+volumes:
+  mangosSharp:
+    name: MangosSharp
+
+networks:
+  mangosSharp:

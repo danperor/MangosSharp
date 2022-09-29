@@ -1,0 +1,33 @@
+name: Build MangosSharp
+
+on: push
+
+jobs:
+
+  build:
+    runs-on: windows-latest 
+
+    env:
+      Solution_Path: ./Source/Mangos.sln
+      Configuration: Release
+
+    steps:
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Restore
+      run: dotnet restore $env:Solution_Path
+
+    - name: Build
+      run: dotnet build --no-restore $env:Solution_Path
+
+    - name: Test
+      run: dotnet test --no-build --no-restore $env:Solution_Path
+
+    - name: Verify
+      run: dotnet format --verify-no-changes --no-restore $env:Solution_Path
